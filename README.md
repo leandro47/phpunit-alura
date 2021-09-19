@@ -2,7 +2,7 @@
 Small application  with example of unit tests
 ## Installation
 
-Install and run the project
+Install the project
 
 ```bash
 composer Install
