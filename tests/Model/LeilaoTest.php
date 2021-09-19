@@ -24,17 +24,17 @@ class LeilaoTest extends TestCase
     {
         $joao = new Usuario('João');
         $maria = new Usuario('Maria');
-    
+
         $leilaoCom2Lances = new Leilao('Fiat 147 0KM');
         $leilaoCom2Lances->recebeLance(new Lance($joao, 1000));
         $leilaoCom2Lances->recebeLance(new Lance($maria, 2000));
-    
+
         $leilaoCom1Lance = new Leilao('Fusca 1972 0KM');
         $leilaoCom1Lance->recebeLance(new Lance($maria, 5000));
-        
+
         $leilaoCom0Lance = new Leilao('Fusca 1972 0KM');
         $leilaoCom0Lance->recebeLance(new Lance($maria, 0));
-    
+
         return [
             '2-lances' => [2, $leilaoCom2Lances, [1000, 2000]],
             '1-lance' => [1, $leilaoCom1Lance, [5000]],
@@ -44,11 +44,12 @@ class LeilaoTest extends TestCase
 
     public function testLeilaoNaoDeveAceitarMaisDe5LancesPorUsuario()
     {
-        $leilao = new Leilao('Palio 206');
-
-        $joao = new Usuario('Jõao');
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Usuário não propor mais de 5 lances por leilão');
+        $leilao = new Leilao('Brasília Amarela');
+        $joao = new Usuario('João');
         $maria = new Usuario('Maria');
-        
+    
         $leilao->recebeLance(new Lance($joao, 1000));
         $leilao->recebeLance(new Lance($maria, 1500));
         $leilao->recebeLance(new Lance($joao, 2000));
@@ -59,22 +60,17 @@ class LeilaoTest extends TestCase
         $leilao->recebeLance(new Lance($maria, 4500));
         $leilao->recebeLance(new Lance($joao, 5000));
         $leilao->recebeLance(new Lance($maria, 5500));
-        
         $leilao->recebeLance(new Lance($joao, 6000));
-        
-        self::assertCount(10, $leilao->getLances());
-        self::assertEquals(5500, $leilao->getLances()[array_key_last( $leilao->getLances())]->getValor());
     }
 
     public function testLeilaoNaoDeveReceberLancesRepetidos()
     {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Usuário não pode propor 2 lances seguidos');
         $leilao = new Leilao('Variante');
         $ana = new Usuario('Ana');
-        
+    
         $leilao->recebeLance(new Lance($ana, 1000));
         $leilao->recebeLance(new Lance($ana, 1500));
-        
-        self::assertCount(1, $leilao->getLances());
-        self::assertEquals(1000, $leilao->getLances()[0]->getValor());
     }
 }
